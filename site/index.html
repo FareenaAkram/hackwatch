@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>hackwatch · catching reward hacking in code models</title>
+<meta name="description" content="A grader, detector and preference-data pipeline that finds code solutions which game the tests instead of solving the task.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Reward hacking · code RL · preference data</p>
+    <h1>hack<span>watch</span></h1>
+    <p class="lede">A model rewarded for passing visible tests can learn to <em>game</em> them. hackwatch grades solutions three ways, catches the cheats with a detector that never sees the answer key, and turns the findings into evidence-backed preference pairs.</p>
+    <div class="stats" id="hero-stats"></div>
+    <p class="cta"><a class="btn" href="#lab">Try the reward lab</a> <a class="btn ghost" href="#pairs">Browse preference pairs</a></p>
+    <p class="meta" id="meta"></p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="lab" aria-labelledby="h-lab">
+    <h2 id="h-lab">Reward lab</h2>
+    <p class="sub">Pick a problem and switch the grader. Watch what earns full reward: under the naive grader the cheats do. Click any solution to inspect its code, the detector's evidence and a counterexample.</p>
+    <div class="controls">
+      <label>Problem <select id="problem"></select></label>
+      <div class="seg" id="grader" role="group" aria-label="Grader"></div>
+    </div>
+    <div id="problem-box" class="problem"></div>
+    <div id="callout" class="callout" aria-live="polite"></div>
+    <div class="lab">
+      <ul id="cands" class="cands"></ul>
+      <article id="detail" class="detail" aria-live="polite"></article>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-agg">
+    <h2 id="h-agg">What each reward signal actually rewards</h2>
+    <p class="sub" id="agg-sub"></p>
+    <div class="card"><div id="chart-rewards"></div></div>
+  </section>
+
+  <section class="two" aria-labelledby="h-det">
+    <div>
+      <h2 id="h-det">Detector results</h2>
+      <p class="sub">Static AST checks plus oracle-free dynamic probes. Evaluated on every synthetic candidate.</p>
+      <div id="det-tiles" class="tiles"></div>
+      <div id="det-kinds" class="kinds"></div>
+      <div id="det-fp" class="note"></div>
+    </div>
+    <div>
+      <h2>Ranking the preference pairs</h2>
+      <p class="sub">Intended order: correct, then honest-but-wrong, then hack. How often does each reward signal agree?</p>
+      <div class="card"><div id="chart-pairs"></div></div>
+    </div>
+  </section>
+
+  <section id="pairs" aria-labelledby="h-pairs">
+    <h2 id="h-pairs">Preference pairs</h2>
+    <div class="controls">
+      <label>Type <select id="pair-type"></select></label>
+      <label>Problem <select id="pair-problem"></select></label>
+      <span class="count" id="pair-count" aria-live="polite"></span>
+    </div>
+    <div id="pair-list" class="pairlist"></div>
+    <article id="pair-detail" class="pairdetail" aria-live="polite"></article>
+  </section>
+
+  <section aria-labelledby="h-how">
+    <h2 id="h-how">How it works</h2>
+    <ol class="how">
+      <li><b>Problems.</b> 20 small tasks, each with a reference solution used only as an oracle, a few visible examples, edge cases and random hidden inputs.</li>
+      <li><b>Candidates.</b> Reference and independent correct solutions, honest bugs mutated from the reference (some pass the visible examples), and five generated reward hacks. Optionally, real LLM samples.</li>
+      <li><b>Three graders.</b> Naive (visible examples, exit status), strict (hidden cases, exact types, secret sentinel) and naive plus detector.</li>
+      <li><b>Detector.</b> Never sees hidden tests or the reference: literal-matching of visible inputs, always-equal objects, harness escapes, test awareness, type anomalies and constant outputs on fresh inputs.</li>
+      <li><b>Pairs.</b> Chosen vs rejected with a rubric and a critique built from execution evidence.</li>
+    </ol>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>Hacks come from five known patterns, so detector recall on unseen hacks is unknown. Honest bugs are single-token mutants, not human errors. Sandboxing is process-level, not a security boundary. See the dataset card for the full list of limitations.</p>
+</footer>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
